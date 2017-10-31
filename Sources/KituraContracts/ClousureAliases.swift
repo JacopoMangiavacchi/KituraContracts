@@ -97,6 +97,35 @@ router.post("/users") { (user: User, respondWith: (User?, RequestError?) -> Void
 public typealias CodableClosure<I: Codable, O: Codable> = (I, @escaping CodableResultClosure<O>) -> Void
 
 /**
+ The `CodableClosureNoIdentifier` is for use in cases where you'd want to simply respond with an object which conforms to `Codable`, which is of the same type as the object passed as a parameter, or responding with a `RequestError` in the form of a `CodableResultClosure`
+ 
+ ### Usage Example: ###
+ ````
+ public struct User: Codable {
+ ...
+ }
+ 
+ router.get("/custom") { (respondWith: (User?, RequestError?) -> Void) in
+ 
+ if databaseConnectionIsOk {
+ 
+ ...
+ //If no errors occured and you have a User you can just respond with the user by passing nil as the 'RequestError?' value.
+ respondWith(user, nil)
+ 
+ } else {
+ 
+ ...
+ 
+ //If there has been an error you can use the respondWith call to respond with an appropiate error and passing nil for the User?.
+ respondWith(nil, .internalServerError)
+ }
+ }
+ ````
+ */
+public typealias CodableClosureNoIdentifier<O: Codable> = (@escaping CodableResultClosure<O>) -> Void
+
+/**
 The `CodableIdentifierClosure` is for use in cases where you'd want to perform a series of actions utilising an object conforming to `Identifier`, then responding with an object which conforms to `Codable`, and/or an object conforming to `Identifier` or responding with a `RequestError` in the form of a `IdentifierCodableResultClosure`
  
 ### Usage Example: ###
